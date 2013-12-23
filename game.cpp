@@ -1,5 +1,11 @@
-#include "stdafx.h"
 #include "Game.h"
+#include "SplashScreen.h"
+#include "MainMenu.h"
+#include <SFML/Graphics.hpp>
+#include <stdio.h> 
+#include <iostream>
+
+
 
 // Game::Start called publicly
 // since it is available globally there should not be more than one
@@ -13,8 +19,8 @@ void Game::Start(void)
 		return; // usually put up an error, but this program closes so redunant
 
 // set the window resolution to 1024x768 at 32bpp color with the title Pang!
-	_mainWindow.create(sf::VideoMode(640,480,32), "Pang!");
-	_gameState = Game::Playing; // switch states
+	_mainWindow.create(sf::VideoMode(1024,768,32), "Pang!");
+	_gameState = Game::ShowingSplash; // switch states
 
 	while(!IsExiting())
 	{
@@ -32,29 +38,64 @@ bool Game::IsExiting()
 }
 
 void Game::GameLoop()
-{
-	sf::Event currentEvent;
-while(_mainWindow.pollEvent(currentEvent))
-{
-
+{ 
 	switch(_gameState)
 	{
-	case Game::Playing:
-		{
-			_mainWindow.clear(sf::Color(255,0,0));
-			_mainWindow.display();
-
-			if (currentEvent.type == sf::Event::Closed)
-			{
-				_gameState = Game::Exiting;
-			}
+	case Game::ShowingMenu:
+		{ 
+			ShowMenu();
 			break;
 		}
+	case Game::ShowingSplash:
+	{
+		ShowSplashScreen();
+		break;
+	}
+
+	case Game::Playing:
+		{
+			sf::Event currentEvent;		
+			while(_mainWindow.pollEvent(currentEvent))
+				{
+				_mainWindow.clear(sf::Color(38, 38, 38));
+				_mainWindow.display();
+
+				if(currentEvent.type == sf::Event::Closed) _gameState = Game::Exiting;
+			
+				if(currentEvent.type == sf::Event::KeyPressed)
+			{
+				if(currentEvent.key.code== sf::Keyboard::Escape) ShowMenu();
+			}
+		     }
+		break;
+	    }
 	}
   }
+
+
+
+
+void Game::ShowSplashScreen()
+{
+	SplashScreen splashScreen;
+	splashScreen.Show(_mainWindow);
+	_gameState = Game::ShowingMenu;
+}	
+
+void Game::ShowMenu()
+{
+	MainMenu mainMenu;
+	MainMenu::MenuResult result = mainMenu.Show(_mainWindow);
+	switch(result)
+	{
+		case MainMenu::Exit:
+			_gameState = Game::Exiting;
+			break;
+		case MainMenu::Play:
+			_gameState = Game::Playing;
+			break;
+	}
 }
-
-
 
 Game::GameState Game::_gameState = Uninitialized;
 sf::RenderWindow Game::_mainWindow;
