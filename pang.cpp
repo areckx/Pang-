@@ -1,13 +1,18 @@
 // Pang.cpp : Defines the entry point for the console application.
 //
-
-#include "stdafx.h"
 #include "Game.h"
+#include "SplashScreen.h"
+#include <SFML/Graphics.hpp>
+#include <stdio.h>
+
+#include <map>
+#include <iostream>
+#include <cassert>
 
 
 
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char *argv[])
 //int main(int argc, char** argv)
 {
 	
